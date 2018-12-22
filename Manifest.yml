@@ -1,0 +1,19 @@
+vendor_path: ./vendor
+exclude_dir: []
+exclude_build: []
+exclude_packages: []
+local_packages: []
+constraints: {}
+packages:
+  github.com/buger/goterm:
+    version: ""
+    commithash: c206103e1f37c0c6c5c039706305ea2aa6e8ad3b
+    subpackages: []
+    deps:
+    - golang.org/x/sys/unix
+  golang.org/x/sys:
+    version: ""
+    commithash: 4d1cda033e0619309c606fc686de3adcf599539e
+    subpackages:
+    - golang.org/x/sys/unix
+    deps: []
