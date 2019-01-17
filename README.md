@@ -1,10 +1,25 @@
 # Engine Status
+
 Interactive App Engine server status tool
 
+If you have used app engine a lot, you have probably noticed the dashboard(s)
+are not the most reliable when it comes to telling you how many instances
+of which version(s) are currently active.
+
+Engine status helps with this by showing you info about your live instances
+in real time and allowing you to change the tool's concurrency and server
+side sleep delay to better understand the scaling attributes of app engine.
+
+This tool is most helpful when performing releases so you can see just how
+smooth the app engine traffic split is and when the new version is serving 100%
+traffic
+
 ## Server Code
+
 In order for this to work properly, you need to create a JSON endpoint
 to be deployed with your app engine app. Here is an example using echo
 webserver:
+
 ```go
 package main
 
@@ -42,10 +57,12 @@ func engineStatus(ctx echo.Context) error {
 ```
 
 Determine:
+
 - How many unique instances are serving traffic presently
-- 
+-
 
 ## Similar To
+
 - Apache Bench (ab)
 - App Engine dashboard(s)
 - Load testing tools

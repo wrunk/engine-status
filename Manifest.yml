@@ -11,6 +11,17 @@ packages:
     subpackages: []
     deps:
     - golang.org/x/sys/unix
+  github.com/mattn/go-runewidth:
+    version: v0.0.4
+    commithash: 703b5e6b11ae25aeb2af9ebb5d5fdf8fa2575211
+    subpackages: []
+    deps: []
+  github.com/nsf/termbox-go:
+    version: ""
+    commithash: 60ab7e3d12ed91bc1b2486559c4b3a6b62297577
+    subpackages: []
+    deps:
+    - github.com/mattn/go-runewidth
   golang.org/x/sys:
     version: ""
     commithash: 4d1cda033e0619309c606fc686de3adcf599539e
