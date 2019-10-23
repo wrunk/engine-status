@@ -8,7 +8,6 @@ import (
 	"os"
 	"reflect"
 	"sort"
-	"strconv"
 	"sync"
 	"time"
 
@@ -27,7 +26,9 @@ var (
 	totalHTTPReqs  = 0
 	done           = false
 	frameSleepTime = 2
+	key            string
 	wg             = &sync.WaitGroup{}
+	ctx            context.Context
 )
 
 /*
@@ -45,15 +46,19 @@ var (
 "port": os.Getenv("PORT"),
 */
 type GAEInstance struct {
+	GAEInstance   string `json:"gae_instance"`
+	GAEService    string `json:"gae_service"`
+	GAEServer     string `json:"gae_server"`
+	GAEVersion    string `json:"gae_version"`
+	GCP           string `json:"google_cloud_project"`
+	GAEDatacenter string `json:"gae_datacenter"`
+
+	// Unused stuff, possibly supported for second gen runtimes
+	GAEEnv          string `json:"gae_env"`
 	GAEApplication  string `json:"gae_application"`
 	GAEDeploymentID string `json:"gae_deployment_id"`
-	GAEEnv          string `json:"gae_env"`
-	GAEInstance     string `json:"gae_instance"`
 	GAEMBMem        string `json:"gae_memory_mb"`
-	GAEService      string `json:"gae_service"`
 	GAERuntime      string `json:"gae_runtime"`
-	GAEVersion      string `json:"gae_version"`
-	GCP             string `json:"google_cloud_project"`
 	Port            string `json:"port"`
 }
 
@@ -75,7 +80,8 @@ func (g *GAEInstance) Hash() string {
 
 func helpExit() {
 	fmt.Printf("Please run the program like:\n")
-	fmt.Printf("go run *.go <url> <max-requests>\n")
+	fmt.Printf("go run *.go <url> <key>\n")
+	fmt.Println("Where key is tied to your server endpoint")
 	os.Exit(-1)
 }
 func main() {
@@ -84,22 +90,20 @@ func main() {
 		helpExit()
 	}
 	url = os.Args[1]
-	maxH := os.Args[2]
-	maxHTTPReqs, err := strconv.Atoi(maxH)
-	if err != nil || maxHTTPReqs < 1 {
+	key = os.Args[2]
 
-		fmt.Printf("Invalid max requests %s\n", maxH)
-		helpExit()
-
+	if !serverIsCompatible() {
+		fatal("Server URL isn't compatible")
 	}
 
-	ctx, cancelFunc := context.WithCancel(context.Background())
+	var cancelFunc func()
+	ctx, cancelFunc = context.WithCancel(context.Background())
 
-	go fetcho(ctx)
+	maxHTTPReqs = 50
 
 	// Render loop. Http processing will happen in its own loop
 	for true {
-		gi, _ := sendHTTP()
+		gi, _ := pingServer()
 		addGI(gi)
 		render()
 		time.Sleep(time.Second * 3)
@@ -128,26 +132,11 @@ func addGI(gi *GAEInstance) {
 	}
 }
 
-// Http orchestration loop
-func fetcho(ctx context.Context) {
-
-	wg := &sync.WaitGroup{}
-
-	for true {
-		// If we're at max con, sleep for 50ms
-
-		// If our ctx is canceled, bail
-	}
-
-}
-
-func httpWorker() {}
-
 func render() {
 	tm.Clear()
 	tm.MoveCursor(0, 0)
 	table = tm.NewTable(0, 10, 5, ' ', 0)
-	fmt.Fprintf(table, "InstanceID\tVersion\tProject\tService\tRuntime\n")
+	fmt.Fprintf(table, "InstanceID\tVersion\tProject\tService\tDatacenter\n")
 	for _, id := range instanceIDs {
 		i := instances[id]
 		fmt.Fprintf(table, "...%s\t%s\t%s\t%s\t%s\t\n",
@@ -155,20 +144,20 @@ func render() {
 			i.GAEVersion,
 			i.GCP,
 			i.GAEService,
-			i.GAERuntime,
+			i.GAEDatacenter,
 		)
 
 	}
 
-	tm.Println("=============================================================================")
+	tm.Println("==================================================================================================")
 	tm.Println("Active App Engine Instances")
-	tm.Println("=============================================================================")
+	tm.Println("==================================================================================================")
 	tm.Println(table)
-	tm.Println("=============================================================================")
-	tm.Println("Concurrency: [5] || Server Sleep (MS) [0]")
+	tm.Println("==================================================================================================")
+	tm.Println("[Concurrency: 5]  [Server Sleep (MS) 0]  [Total Requests 13]")
 	tm.Println("Press up/down to change concurrency || Press s to increase sleep 100ms")
 	tm.Println("d to decrease 100ms")
-	tm.Println("=============================================================================")
+	tm.Println("==================================================================================================")
 	if len(consoleMsgQ) > 0 {
 		conTex.Lock()
 		ss := consoleMsgQ[0]
@@ -179,7 +168,7 @@ func render() {
 		tm.Println("No messages...")
 
 	}
-	tm.Println("=============================================================================")
+	tm.Println("==================================================================================================")
 
 	tm.Flush()
 }

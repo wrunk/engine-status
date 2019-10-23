@@ -1,10 +1,37 @@
 # Engine Status
-Interactive App Engine server status tool
+
+Interactive App Engine server status tool. If you already have
+an App Engine server running and you want to gain more insight
+into how many unique instances and versions are running then
+this is the tool for you! Shows you:
+
+- How many different versions of your service are running
+- How many total instances are running
+- Which data centers are these served from
+
+This tool is helpful to run before and during a deploy.
+
+**Presently this is only working with the App Engine
+Go 1.9 runtime.** To bring it up to the second gen runtimes,
+it should be a simple matter of getting server vars from env vars.
+
+**Warning this tool can rack up tremendous \$$$charges$$\$ if used
+improperly. Please use with caution.** It cannot be used to ddos
+a random endpoint since it requires a proper return format.
+
+## Quick start
+
+1 Setup a server endpoint as described below
+1 `go run *.go <url> <key>`
 
 ## Server Code
+
 In order for this to work properly, you need to create a JSON endpoint
 to be deployed with your app engine app. Here is an example using echo
 webserver:
+
+TODO update this
+
 ```go
 package main
 
@@ -35,17 +62,12 @@ func engineStatus(ctx echo.Context) error {
 		"port": os.Getenv("PORT"),
 	})
 }
-.
 ...
-.
 
 ```
 
-Determine:
-- How many unique instances are serving traffic presently
-- 
-
 ## Similar To
+
 - Apache Bench (ab)
 - App Engine dashboard(s)
 - Load testing tools
