@@ -1,6 +1,5 @@
 # Engine Status
 
-Interactive App Engine server status tool. If you already have
 an App Engine server running and you want to gain more insight
 into how many unique instances and versions are running then
 this is the tool for you! Shows you:
@@ -23,6 +22,15 @@ a random endpoint since it requires a proper return format.
 
 1 Setup a server endpoint as described below
 1 `go run *.go <url> <key>`
+
+
+Engine status helps with this by showing you info about your live instances
+in real time and allowing you to change the tool's concurrency and server
+side sleep delay to better understand the scaling attributes of app engine.
+
+This tool is most helpful when performing releases so you can see just how
+smooth the app engine traffic split is and when the new version is serving 100%
+traffic
 
 ## Server Code
 

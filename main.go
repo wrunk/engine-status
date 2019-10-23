@@ -101,6 +101,7 @@ func main() {
 
 	maxHTTPReqs = 50
 
+	_ = cancelFunc
 	// Render loop. Http processing will happen in its own loop
 	for true {
 		gi, _ := pingServer()
