@@ -10,35 +10,20 @@ this is the tool for you! Shows you:
 
 This tool is helpful to run before and during a deploy.
 
-**Presently this is only working with the App Engine
-Go 1.9 runtime.** To bring it up to the second gen runtimes,
-it should be a simple matter of getting server vars from env vars.
-
 **Warning this tool can rack up tremendous \$$$charges$$\$ if used
 improperly. Please use with caution.** It cannot be used to ddos
 a random endpoint since it requires a proper return format.
 
 ## Quick start
 
-1 Setup a server endpoint as described below
-1 `go run *.go <url> <key>`
-
-
-Engine status helps with this by showing you info about your live instances
-in real time and allowing you to change the tool's concurrency and server
-side sleep delay to better understand the scaling attributes of app engine.
-
-This tool is most helpful when performing releases so you can see just how
-smooth the app engine traffic split is and when the new version is serving 100%
-traffic
+1. Setup a server endpoint as described below
+1. `go run *.go <url> <key>`
 
 ## Server Code
 
 In order for this to work properly, you need to create a JSON endpoint
 to be deployed with your app engine app. Here is an example using echo
 webserver:
-
-TODO update this
 
 ```go
 package main
