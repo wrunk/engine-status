@@ -8,8 +8,10 @@ import (
 )
 
 type EngineStatus struct {
-	TimerStart time.Time // For use with finding elapsed time
-	Instances  map[string]*InstanceMeta
+	TimerStart   time.Time // For use with finding elapsed time
+	Instances    map[string]*InstanceMeta
+	Concurrency  int
+	SleepDelayMS int // Used to really piss the server off so it will spawn more instances
 }
 
 type InstanceMeta struct {
@@ -42,21 +44,23 @@ func (es *EngineStatus) AddResp(er *EngineResponse) bool {
 
 func NewES() *EngineStatus {
 	return &EngineStatus{
-		TimerStart: time.Now(),
-		Instances:  map[string]*InstanceMeta{},
+		TimerStart:  time.Now(),
+		Instances:   map[string]*InstanceMeta{},
+		Concurrency: 1,
 	}
 }
 
 func (es *EngineStatus) RenderTable() {
-	// tm.Clear() // Clear current screen
+	tm.Clear() // Clear current screen
 	totals := tm.NewTable(0, 10, 5, ' ', 0)
-	fmt.Fprintf(totals, "Timer\tTotal Instances\tTotal Reqs\n")
+	fmt.Fprintf(totals, "Timer\tTotal Instances\tTotal Reqs\tConcurrency\tSleepTimeMS\n")
 	tr := 0
 	for _, i := range es.Instances {
 		tr += i.NumRequests
 	}
 	elapsed := time.Now().Sub(es.TimerStart)
-	fmt.Fprintf(totals, "%s\t%d\t%d\n", elapsed, len(es.Instances), tr)
+	fmt.Fprintf(totals, "%s\t%d\t%d\t%d\t%d\n", elapsed, len(es.Instances), tr, es.Concurrency,
+		es.SleepDelayMS)
 	tm.Println(totals)
 	tm.Flush()
 }

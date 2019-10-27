@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"time"
@@ -29,7 +30,9 @@ func main() {
 	}
 
 	// var cancelFunc func()
-	// ctx, cancelFunc := context.WithCancel(context.Background())
+	ctx, cancelFunc := context.WithCancel(context.Background())
+
+	go syncInput(ctx, cancelFunc, es)
 
 	// _ = cancelFunc
 	// Render loop. Http processing will happen in its own loop
@@ -37,16 +40,16 @@ func main() {
 		er, _ := pingServer(url, key, sleepTime)
 		totalHTTPReqs++
 		es.AddResp(er)
+		es.RenderTable()
 		fmt.Println(er)
 		fmt.Println("Sleeping for 500 milli")
-		es.RenderTable()
-		time.Sleep(time.Millisecond * 500)
+		time.Sleep(time.Second * 2)
 		if totalHTTPReqs > maxHTTPReqs {
 			fmt.Printf("Hit %d requests, exiting\n", maxHTTPReqs)
 			break
 		}
 	}
-	// cancelFunc()
+	cancelFunc()
 }
 
 func helpExit() {
